@@ -76,6 +76,7 @@ class LoginAPI(Resource):
             return redirect('/login')
 
 class LogoutAPI(Resource):
+    @login_required
     def post(self):
         logout_user()
         return redirect('/', code=307)
@@ -89,6 +90,7 @@ class HomeAPI(Resource):
 #     #session.logout('user_id',None)
 
 class FarmAPI(Resource):
+    @login_required
     def get(self):
         #temp_user = User.get_by_id('5d77d4d4694d62037a1684e7')
         farm_data = Farm.get_farm_by_user(current_user.get_id())
@@ -112,6 +114,7 @@ parser.add_argument('crop_part',type=str,default=None)
 parser.add_argument('date',type=str, default=None)
 
 class CropDetailAPI(Resource):
+    @login_required
     def get(self,position_num):
         crop_data = Crop.get_crop_by_position('5d77d915acf3296b9e3c1c73',position_num)
 
