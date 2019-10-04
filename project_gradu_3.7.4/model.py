@@ -200,16 +200,22 @@ class Position():
 
 
 if __name__ == '__main__':
-    user_dic = {'user_id': "kkkdeon", 'user_pw': "1234", 'user_name': "김도연"}
+    ##지수 user id '5d943df97689541378a2540f'
+    ##지수 farm id '5d95c39e0d93ac9e7b820ce2'
+    ##지수 position id '5d95c3f7cd8c9473a8840692'
+    ##지수 crop id '5d95c445451de46928d16d85'
+
+
+    #user_dic = {'user_id': "kkkdeon", 'user_pw': "1234", 'user_name': "김도연"}
     #User.create(user_dic)
-    farm_dic = {'name': 'farm1', 'manager': User.get_by_id('5d77d4d4694d62037a1684e7'),'phone_num': '01046244619'}
-    crop_dic = {'farm': Farm.get_by_id('5d77d915acf3296b9e3c1c73'), 'crop_name':"tomato2", 'crop_type':"tomato", 'position': Position.get_by_id('5d9065696b602e2e595d873e')}
-    position_dic = {'farm': Farm.get_by_id('5d77d915acf3296b9e3c1c73'), 'position_num': 2, 'position_abs': "gps주소", 'position_name': "2번 위치 desc"}
-    crop_part_dic={'crop': Crop.get_by_id('5d9079e8c54b56aab045d9fb'),'crop_part_name':"stem2",'length':3.88,'speed':0.90,'date': datetime.now()}
-    #CropPart.create(crop_part_dic)
+    #farm_dic = {'name': 'farm1', 'manager': User.get_by_id('5d943df97689541378a2540f'),'phone_num': '01046244619'}
+    # crop_dic = {'farm': Farm.get_by_id('5d95c39e0d93ac9e7b820ce2'), 'crop_name':"tomato2", 'crop_type':"tomato", 'position': Position.get_by_id('5d95c3f7cd8c9473a8840692')}
+    #position_dic = {'farm': Farm.get_by_id('5d95c39e0d93ac9e7b820ce2'), 'position_num': 2, 'position_abs': "gps주소", 'position_name': "2번 위치 desc"}
+     crop_part_dic={'crop': Crop.get_by_id('5d95c445451de46928d16d85'),'crop_part_name':"stem2",'length':3.88,'speed':0.90,'date': datetime.now()}
+     CropPart.create(crop_part_dic)
     #Farm.create(farm_dic)
     #Position.create(position_dic)
-    #Crop.create(crop_dic)
+    # Crop.create(crop_dic)
     #print(Farm.get_farm_by_user('5d77d4d4694d62037a1684e7').to_mongo())
     #print(User.get_by_id('5d77d4d4694d62037a1684e7').pk)
 
