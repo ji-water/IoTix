@@ -7,7 +7,6 @@ from flask_objectid_converter import ObjectIDConverter
 from form import LoginForm
 from flask_wtf.csrf import CSRFProtect
 
-
 from model import *
 import json
 from bson import ObjectId
@@ -32,6 +31,7 @@ login_manager.init_app(app)
 class UserForLogin():
     def __init__(self, username):
         self.username = username #user pk
+        return
 
     def is_authenticated(self):
         return True
@@ -60,7 +60,7 @@ def load_user(user_id):
 
 class LoginAPI(Resource):
     def get(self):
-        return 'login get api'
+        return make_response(render_template('login.html'))
 
     def post(self):
         #form = LoginForm()
@@ -70,44 +70,44 @@ class LoginAPI(Resource):
             user_obj = UserForLogin(str(user.pk))
             login_user(user_obj)
             flash("Logged in successfully", category='success')
-            return redirect('/farm')
+            session['logged_in']=True
+            return redirect('/')
         else:
             flash("Wrong username or password", category='error')
             return redirect('/login')
 
 class LogoutAPI(Resource):
     @login_required
-    def post(self):
+    def get(self):
+        session['logged_in']=False
         logout_user()
         return redirect('/')
 
-
 class HomeAPI(Resource):
     def get(self):
-        return Response(render_template('mongo.html', result=None, mimetype='mongo/html'))
-
-# class LoginOut(Resource):
-#     def post(self):
-#     #session.logout('user_id',None)
+        if not session.get('logged_in'):
+            return redirect('/login')
+        else:
+            return make_response(render_template('index.html'))
 
 class FarmAPI(Resource):
     @login_required
     def get(self):
-        #temp_user = User.get_by_id('5d77d4d4694d62037a1684e7')
-        farm_data = Farm.get_farm_by_user(current_user.get_id())
-        position_data = Position.get_position_list(farm_data.pk)
-        #url을 farm_id로 바꿔서 get_farm_by_id 로 바꿀 예정..
+        if not session.get('logged_in'):
+            return redirect('/login')
+        else:
+            farm_data = Farm.get_farm_by_user(current_user.get_id())
+            position_data = Position.get_position_list(farm_data.pk)
 
-        #user의 농장정보 + 작물위치(도식화)정보
-        data = {
-            'id':str(farm_data.pk),
-            'name':farm_data.name,
-            'manager':farm_data.manager.user_name,
-            'position_data' : position_data
-        }
-
-        return make_response(json.dumps(data,ensure_ascii=False),200)
-
+            #user의 농장정보 + 작물위치(도식화)정보
+            data = {
+                'id':str(farm_data.pk),
+                'name':farm_data.name,
+                'manager':farm_data.manager.user_name,
+                'position_data' : position_data
+            }
+            #return make_response(json.dumps(data,ensure_ascii=False),200)
+            return make_response(render_template('farm.html',id=data['id'],name=data['name'],manager=data['manager'],position_data=data['position_data']))
 
 parser = reqparse.RequestParser()
 parser.add_argument('crop', type=str,default=None)
