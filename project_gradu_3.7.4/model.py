@@ -1,7 +1,7 @@
 from schema import UserSchema,FarmSchema,CropSchema,CropPartSchema,PositionSchema
 from pprint import pprint
 from bson import ObjectId
-from datetime import datetime
+from datetime import datetime,timedelta
 
 class ModelErrorBase(Exception):
     def __init__(self,msg):
@@ -118,20 +118,25 @@ class CropPart():
             for key, value in data.items():
                 if isinstance(value, ObjectId):
                     data[key] = str(value)
-                if isinstance(value,datetime):
+                if isinstance(value, datetime):
                     data[key] = str(value)
 
         return qs_list
 
     @staticmethod
-    def get_crop_part_detail(crop_name,part_name,date):
+    def get_crop_part_detail(crop_name, part_name, date_obj):
+        #date_obj = datetime.strptime(date, "%Y%m%d")
+        date_obj2 = date_obj+timedelta(days=1)
+        print(date_obj2)
+
         crop_qs = CropSchema.objects(crop_name=crop_name,farm='5d77d915acf3296b9e3c1c73').first()
-        part_qs = CropPartSchema.objects(crop=crop_qs.pk,crop_part_name=part_name)
+        part_qs = CropPartSchema.objects.filter(crop=crop_qs.pk,crop_part_name=part_name)
+        date_qs = part_qs.filter(__raw__={"date": {"$gte": date_obj, "$lt": date_obj2}})
         #date 쿼리 추가
         if part_qs.count == 0:
             return None
 
-        qs_list = list(map(lambda part_data: part_data.to_mongo(), part_qs))  # convert to list
+        qs_list = list(map(lambda part_data: part_data.to_mongo(), date_qs))  # convert to list
 
         # parse objectid to str
         for data in qs_list:
@@ -142,24 +147,28 @@ class CropPart():
                     data[key] = str(value)
 
         return qs_list
-#
-#     #crop_id 로 해당 작물이 가진 part 정보 가져오기
-#
-#     #part 선택하면 part 정보 가져오기 -> 여기까지 part default정보(default:오늘-6)
-#
-#     # crop part 날짜 입력시 (queryparam) 정보 계산+반환
-#
-#     @staticmethod
-#     def get_info(crop_id=None,part=None,date=None):
-#         if not crop_id:
-#             return None
-#         qs = CropSchema.objects(id=crop_id)
-#
-#         if part:
-#             qs = CropPartSchema.objects(crop=crop_id, crop_part_name=part)
-#
-#         if date:
-#             qs = qs.filter()
+
+    @staticmethod
+    def get_crop_part_day_detail(crop_name, part_name, date_obj):
+        #date_obj = datetime.strptime(date, "%Y%m%d")
+        date_obj2 = date_obj+timedelta(days=1)
+
+        crop_qs = CropSchema.objects(crop_name=crop_name,farm='5d77d915acf3296b9e3c1c73').first()
+        part_qs = CropPartSchema.objects.filter(crop=crop_qs.pk,crop_part_name=part_name)
+        date_qs = part_qs.filter(__raw__={"date": {"$gte": date_obj, "$lt": date_obj2}})
+
+        if date_qs.count==0:
+            return None
+        data = date_qs.order_by('-id').first().to_mongo()
+
+        for key, value in data.items():
+            if isinstance(value, ObjectId):
+                data[key] = str(value)
+            if isinstance(value, datetime):
+                data[key] = str(value)
+
+        return data
+
 
 class Position():
     @staticmethod
@@ -205,8 +214,12 @@ if __name__ == '__main__':
     farm_dic = {'name': 'farm1', 'manager': User.get_by_id('5d77d4d4694d62037a1684e7'),'phone_num': '01046244619'}
     crop_dic = {'farm': Farm.get_by_id('5d77d915acf3296b9e3c1c73'), 'crop_name':"tomato2", 'crop_type':"tomato", 'position': Position.get_by_id('5d9065696b602e2e595d873e')}
     position_dic = {'farm': Farm.get_by_id('5d77d915acf3296b9e3c1c73'), 'position_num': 2, 'position_abs': "gps주소", 'position_name': "2번 위치 desc"}
-    crop_part_dic={'crop': Crop.get_by_id('5d9079e8c54b56aab045d9fb'),'crop_part_name':"stem2",'length':3.88,'speed':0.90,'date': datetime.now()}
+
+    str1 = "20191004 23:50:10"
+    date_obj1 = datetime.strptime(str1, "%Y%m%d %H:%M:%S")
+    crop_part_dic={'crop': Crop.get_by_id('5d9079e8c54b56aab045d9fb'),'crop_part_name':"stem1",'length':6.00,'speed':0.84,'date': date_obj1}
     #CropPart.create(crop_part_dic)
+
     #Farm.create(farm_dic)
     #Position.create(position_dic)
     #Crop.create(crop_dic)
@@ -219,3 +232,13 @@ if __name__ == '__main__':
     #pprint(Position.get_position_list('5d77d915acf3296b9e3c1c73'))
     #pprint(Crop.get_crop_by_farm('5d77d915acf3296b9e3c1c73'))
 
+    str_date = "20191005"
+    str_date2="20191006"
+    tp_date = datetime.now()
+    date = datetime.strptime(str_date, "%Y%m%d")
+    date2 = datetime.strptime(str_date2, "%Y%m%d")
+
+    #pprint(CropPart.get_crop_part_detail("tomato1","stem1","20191005"))
+
+    #date_obj = datetime.strptime("20191005", "%Y%m%d")
+    #pprint(CropPart.get_crop_part_day_detail("tomato1", "stem1", date_obj))

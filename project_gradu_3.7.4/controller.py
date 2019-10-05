@@ -2,7 +2,7 @@
 from flask import Flask,request, redirect, render_template, url_for, flash,session,jsonify
 from flask_login import LoginManager,login_user, logout_user, current_user, login_required
 from flask_restful import Resource,Api,reqparse
-from flask import make_response
+from flask import make_response,Response
 from flask_objectid_converter import ObjectIDConverter
 from form import LoginForm
 from flask_wtf.csrf import CSRFProtect
@@ -79,11 +79,12 @@ class LogoutAPI(Resource):
     @login_required
     def post(self):
         logout_user()
-        return redirect('/', code=307)
+        return redirect('/')
+
 
 class HomeAPI(Resource):
-    def post(self):
-        return 'access home successfully'
+    def get(self):
+        return Response(render_template('mongo.html', result=None, mimetype='mongo/html'))
 
 # class LoginOut(Resource):
 #     def post(self):
@@ -121,25 +122,48 @@ class CropDetailAPI(Resource):
         #crop에 해당하는 part 정보도 포함
         for data in crop_data:
             part_name_data = CropPart.get_having_part_name(data['_id'])
-            data['crop_part']=part_name_data #crop_part의 이름만 빼오자,, 중복없이?..(가진 crop_part 이름 list)
+            data['crop_part']=part_name_data #중복없이 crop_part_name list만 추가
 
         return crop_data
-        # args = parser.parse_args()
-        # crop = args['crop']
-        # crop_part = args['crop_part']
-        # if args['data'] is None :
-        #     date = datetime.datetime.today().strptime('%Y%m%d')
-        # return {'crop': crop,'crop_part': crop_part,'date': date}
 
+    @login_required
     def post(self,position_num):
         #구현중
         crop_name = request.form['crop_name']
         part_name = request.form['crop_part_name']
-        date = request.form['date']
-        data_temp = []
+        if request.form['date'] :
+            date_temp = request.form['date'] #format : 20191005
+        else :
+            date_temp = datetime.datetime.now().strftime("%Y%m%d")
 
-        return data_temp
+        date_obj = datetime.datetime.strptime(date_temp, "%Y%m%d")
 
+        today = datetime.datetime.today().strftime("%Y%m%d")
+        today_obj = datetime.datetime.strptime(today, "%Y%m%d")
+
+        gap = (today_obj-date_obj).days #오늘날짜-입력된날짜
+
+        result_list = list()
+        list_for_graph = list() #7일의 delta만 담음
+
+        for i in range(gap+1) :
+            temp_qs = CropPart.get_crop_part_day_detail(crop_name,part_name,date_obj+timedelta(days=i))
+            yes_qs  = CropPart.get_crop_part_day_detail(crop_name,part_name,date_obj+timedelta(days=i-1))
+            temp_qs['delta']= temp_qs['length']-yes_qs['length'] #변화량 추가
+
+            list_for_graph.append(temp_qs['delta'])
+            result_list.append(temp_qs)
+
+        for i in range(7-(gap+1)):
+            tp_dict = dict()
+            tp_dict['date'] = str(today_obj+timedelta(days=i+1))
+
+            list_for_graph.append(float(0))
+            result_list.append(tp_dict)
+
+        print(list_for_graph)
+
+        return result_list
 
 api.add_resource(HomeAPI, '/')
 api.add_resource(LoginAPI, '/login')
