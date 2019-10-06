@@ -106,6 +106,11 @@ class FarmAPI(Resource):
                 'manager':farm_data.manager.user_name,
                 'position_data' : position_data
             }
+            p_list = [0]*9
+            for x in data['position_data']:
+                p_list[x['position_num']-1]=1
+            data['position_list'] = p_list
+
             #return make_response(json.dumps(data,ensure_ascii=False),200)
             return make_response(render_template('farm.html',id=data['id'],name=data['name'],manager=data['manager'],position_data=data['position_data']))
 
@@ -117,7 +122,8 @@ parser.add_argument('date',type=str, default=None)
 class CropDetailAPI(Resource):
     @login_required
     def get(self,position_num):
-        crop_data = Crop.get_crop_by_position('5d77d915acf3296b9e3c1c73',position_num)
+        farm_data = Farm.get_farm_by_user(current_user.get_id()) #farm_id받아올수있으면 필요없는 과정
+        crop_data = Crop.get_crop_by_position(farm_data.pk, position_num)
 
         #crop에 해당하는 part 정보도 포함
         for data in crop_data:
@@ -129,6 +135,7 @@ class CropDetailAPI(Resource):
     @login_required
     def post(self,position_num):
         #구현중
+        farm_data = Farm.get_farm_by_user(current_user.get_id()) #farm_id받아올수있으면 필요없는 과정
         crop_name = request.form['crop_name']
         part_name = request.form['crop_part_name']
         if request.form['date'] :
@@ -147,8 +154,8 @@ class CropDetailAPI(Resource):
         list_for_graph = list() #7일의 delta만 담음
 
         for i in range(gap+1) :
-            temp_qs = CropPart.get_crop_part_day_detail(crop_name,part_name,date_obj+timedelta(days=i))
-            yes_qs  = CropPart.get_crop_part_day_detail(crop_name,part_name,date_obj+timedelta(days=i-1))
+            temp_qs = CropPart.get_crop_part_day_detail(farm_data.pk,crop_name,part_name,date_obj+timedelta(days=i))
+            yes_qs  = CropPart.get_crop_part_day_detail(farm_data.pk,crop_name,part_name,date_obj+timedelta(days=i-1))
             temp_qs['delta']= temp_qs['length']-yes_qs['length'] #변화량 추가
 
             list_for_graph.append(temp_qs['delta'])

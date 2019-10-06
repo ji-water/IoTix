@@ -124,12 +124,12 @@ class CropPart():
         return qs_list
 
     @staticmethod
-    def get_crop_part_detail(crop_name, part_name, date_obj):
+    def get_crop_part_detail(farm_id,crop_name, part_name, date_obj):
         #date_obj = datetime.strptime(date, "%Y%m%d")
         date_obj2 = date_obj+timedelta(days=1)
         print(date_obj2)
 
-        crop_qs = CropSchema.objects(crop_name=crop_name,farm='5d77d915acf3296b9e3c1c73').first()
+        crop_qs = CropSchema.objects(crop_name=crop_name,farm=farm_id).first()
         part_qs = CropPartSchema.objects.filter(crop=crop_qs.pk,crop_part_name=part_name)
         date_qs = part_qs.filter(__raw__={"date": {"$gte": date_obj, "$lt": date_obj2}})
         #date 쿼리 추가
@@ -149,11 +149,11 @@ class CropPart():
         return qs_list
 
     @staticmethod
-    def get_crop_part_day_detail(crop_name, part_name, date_obj):
+    def get_crop_part_day_detail(farm_id,crop_name, part_name, date_obj):
         #date_obj = datetime.strptime(date, "%Y%m%d")
         date_obj2 = date_obj+timedelta(days=1)
 
-        crop_qs = CropSchema.objects(crop_name=crop_name,farm='5d77d915acf3296b9e3c1c73').first()
+        crop_qs = CropSchema.objects(crop_name=crop_name,farm=farm_id).first()
         part_qs = CropPartSchema.objects.filter(crop=crop_qs.pk,crop_part_name=part_name)
         date_qs = part_qs.filter(__raw__={"date": {"$gte": date_obj, "$lt": date_obj2}})
 
