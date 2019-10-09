@@ -72,6 +72,22 @@ class Crop():
         return list(map(lambda crop: crop.to_mongo(), qs))
 
     @staticmethod
+    def get_crop_by_name(farm_id,position_num,crop_name):
+        position_qs = PositionSchema.objects(farm=farm_id,position_num=position_num).first()
+        qs = CropSchema.objects(farm=farm_id,position=position_qs.id,crop_name=crop_name)
+        if qs.count == 0:
+            return None
+        qs_list = list(map(lambda crop: crop.to_mongo(), qs)) #convert to list
+
+        #parse objectid to str
+        for data in qs_list:
+            for key, value in data.items():
+                if isinstance(value,ObjectId):
+                    data[key] = str(value)
+
+        return qs_list[0]
+
+    @staticmethod
     def get_crop_by_position(farm_id, position_num):
         position_qs = PositionSchema.objects(farm=farm_id,position_num=position_num).first()
         qs = CropSchema.objects(farm=farm_id,position=position_qs.id)

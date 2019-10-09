@@ -119,6 +119,15 @@ parser.add_argument('crop', type=str,default=None)
 parser.add_argument('crop_part',type=str,default=None)
 parser.add_argument('date',type=str, default=None)
 
+class CropAPI(Resource):
+    @login_required
+    def get(self,position_num,crop_name):
+        farm_data = Farm.get_farm_by_user(current_user.get_id())
+        crop_data = Crop.get_crop_by_name(farm_data.pk, position_num,crop_name)
+        part_name_data = CropPart.get_having_part_name(crop_data['_id'])
+
+        return part_name_data
+
 class CropDetailAPI(Resource):
     @login_required
     def get(self,position_num):
@@ -180,6 +189,7 @@ api.add_resource(LogoutAPI, '/logout')
 api.add_resource(FarmAPI, '/farm')
 #api.add_resource(CropDetailAPI,'/farm/crop_detail')
 api.add_resource(CropDetailAPI, '/farm/<int:position_num>')
+api.add_resource(CropAPI, '/farm/<int:position_num>/<string:crop_name>')
 
 if __name__ == '__main__':
     app.run(debug=True)
