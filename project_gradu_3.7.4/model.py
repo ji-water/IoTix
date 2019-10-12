@@ -167,15 +167,11 @@ class CropPart():
 
     @staticmethod
     def get_crop_part_day_detail(farm_id,crop_name, part_name, date_obj):
-
-        print(farm_id,crop_name,part_name,date_obj)
-
         #date_obj = datetime.strptime(date, "%Y%m%d")
         date_obj2 = date_obj+timedelta(days=1)
         print(date_obj2)
 
         crop_qs = CropSchema.objects(crop_name=crop_name,farm=farm_id).first()
-        print(crop_qs)
         part_qs = CropPartSchema.objects.filter(crop=crop_qs.pk,crop_part_name=part_name)
         print(part_qs)
         date_qs = part_qs.filter(__raw__={"date": {"$gte": date_obj, "$lt": date_obj2}})

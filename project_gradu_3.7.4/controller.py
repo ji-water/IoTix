@@ -205,6 +205,7 @@ api.add_resource(FarmAPI, '/farm')
 api.add_resource(CropAPI, '/farm/<int:position_num>/<string:crop_name>')
 #api.add_resource(CropDetailAPI,'/farm/crop_detail')
 api.add_resource(CropDetailAPI, '/farm/<int:position_num>')
+api.add_resource(CropAPI, '/farm/<int:position_num>/<string:crop_name>')
 
 
 if __name__ == '__main__':
