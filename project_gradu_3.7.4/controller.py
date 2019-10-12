@@ -91,6 +91,7 @@ class HomeAPI(Resource):
             return make_response(render_template('index.html'))
 
 class FarmAPI(Resource):
+
     @login_required
     def get(self):
         if not session.get('logged_in'):
@@ -106,34 +107,61 @@ class FarmAPI(Resource):
                 'manager':farm_data.manager.user_name,
                 'position_data' : position_data
             }
+
+            p_list = [0] * 9
+            for x in data['position_data']:
+                p_list[x['position_num'] - 1] = 1
+            data['position_list'] = p_list
+
             #return make_response(json.dumps(data,ensure_ascii=False),200)
-            return make_response(render_template('farm.html',id=data['id'],name=data['name'],manager=data['manager'],position_data=data['position_data']))
+            return make_response(render_template('farm.html',id=data['id'],name=data['name'],manager=data['manager'],position_data=data['position_data'],p_list=data['position_list']))
+
+    @login_required
+    def post(self):
+        position_num = request.form['position_num']
+        return redirect(url_for('cropdetailapi',position_num=position_num))
+
 
 parser = reqparse.RequestParser()
 parser.add_argument('crop', type=str,default=None)
 parser.add_argument('crop_part',type=str,default=None)
 parser.add_argument('date',type=str, default=None)
 
+class CropAPI(Resource):
+    @login_required
+    def get(self,position_num,crop_name):
+        farm_data = Farm.get_farm_by_user(current_user.get_id())
+        crop_data = Crop.get_crop_by_name(farm_data.pk, position_num,crop_name)
+        part_name_data = CropPart.get_having_part_name(crop_data['_id'])
+
+        return part_name_data
+
 class CropDetailAPI(Resource):
     @login_required
     def get(self,position_num):
-        crop_data = Crop.get_crop_by_position('5d77d915acf3296b9e3c1c73',position_num)
+        farm_data = Farm.get_farm_by_user(current_user.get_id())  # farm_id받아올수있으면 필요없는 과정
+        crop_data = Crop.get_crop_by_position(farm_data.pk, position_num)
 
         #crop에 해당하는 part 정보도 포함
         for data in crop_data:
             part_name_data = CropPart.get_having_part_name(data['_id'])
             data['crop_part']=part_name_data #중복없이 crop_part_name list만 추가
 
-        return crop_data
+        chart_data = [{'delta':0},{'delta':0},{'delta':0},{'delta':0},{'delta':0},{'delta':0},{'delta':0}]
+        date_select=0
+
+        #return crop_data
+        return make_response(render_template('charts.html',position_num=position_num,data=crop_data,chart_list=chart_data,date_select=date_select))
 
     @login_required
     def post(self,position_num):
         #구현중
+        farm_data = Farm.get_farm_by_user(current_user.get_id())  # farm_id받아올수있으면 필요없는 과정
         crop_name = request.form['crop_name']
         part_name = request.form['crop_part_name']
-        if request.form['date'] :
+        if request.form['date'] != 00000000:
             date_temp = request.form['date'] #format : 20191005
-        else :
+        else:
             date_temp = datetime.datetime.now().strftime("%Y%m%d")
 
         date_obj = datetime.datetime.strptime(date_temp, "%Y%m%d")
@@ -147,8 +175,8 @@ class CropDetailAPI(Resource):
         list_for_graph = list() #7일의 delta만 담음
 
         for i in range(gap+1) :
-            temp_qs = CropPart.get_crop_part_day_detail(crop_name,part_name,date_obj+timedelta(days=i))
-            yes_qs  = CropPart.get_crop_part_day_detail(crop_name,part_name,date_obj+timedelta(days=i-1))
+            temp_qs = CropPart.get_crop_part_day_detail(farm_data.pk, crop_name, part_name, date_obj + timedelta(days=i))
+            yes_qs = CropPart.get_crop_part_day_detail(farm_data.pk, crop_name, part_name, date_obj + timedelta(days=i - 1))
             temp_qs['delta']= temp_qs['length']-yes_qs['length'] #변화량 추가
 
             list_for_graph.append(temp_qs['delta'])
@@ -162,8 +190,11 @@ class CropDetailAPI(Resource):
             result_list.append(tp_dict)
 
         print(list_for_graph)
+        crop_data = Crop.get_crop_by_position(farm_data.pk, position_num)
+        date_select = 1
 
-        return result_list
+        #return result_list
+        return make_response(render_template('charts.html', position_num=position_num, data=crop_data, chart_list=result_list, date_select=date_select))
 
 api.add_resource(HomeAPI, '/')
 api.add_resource(LoginAPI, '/login')
@@ -171,8 +202,10 @@ api.add_resource(LogoutAPI, '/logout')
 #api.add_resource(FarmAPI,'/<ObjectId:user_pk>')
 #api.add_resource(FarmAPI,'/farm/<ObjectId:farm_id>')
 api.add_resource(FarmAPI, '/farm')
+api.add_resource(CropAPI, '/farm/<int:position_num>/<string:crop_name>')
 #api.add_resource(CropDetailAPI,'/farm/crop_detail')
 api.add_resource(CropDetailAPI, '/farm/<int:position_num>')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
