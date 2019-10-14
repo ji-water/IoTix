@@ -173,7 +173,12 @@ class CropPart():
 
         crop_qs = CropSchema.objects(crop_name=crop_name,farm=farm_id).first()
         part_qs = CropPartSchema.objects.filter(crop=crop_qs.pk,crop_part_name=part_name)
-        print(part_qs)
+
+        part_list = list(map(lambda part_data: part_data.to_mongo(), part_qs))  # convert to list
+        speed_list = list()
+        for data in part_list:
+            speed_list.append(data['speed'])
+
         date_qs = part_qs.filter(__raw__={"date": {"$gte": date_obj, "$lt": date_obj2}})
         print(date_qs)
 
@@ -188,8 +193,20 @@ class CropPart():
             if isinstance(value, datetime):
                 data[key] = str(value)
 
+
         return data
 
+    @staticmethod
+    def get_crop_part_speed_list(farm_id,crop_name, part_name):
+        crop_qs = CropSchema.objects(crop_name=crop_name, farm=farm_id).first()
+        part_qs = CropPartSchema.objects.filter(crop=crop_qs.pk, crop_part_name=part_name)
+
+        part_list = list(map(lambda part_data: part_data.to_mongo(), part_qs))  # convert to list
+        speed_list = list()
+        for data in part_list:
+            speed_list.append(data['speed'])
+
+        return speed_list
 
 class Position():
     @staticmethod
@@ -245,10 +262,10 @@ if __name__ == '__main__':
     #crop_dic = {'farm': Farm.get_by_id('5d95c39e0d93ac9e7b820ce2'), 'crop_name':"tomato2", 'crop_type':"tomato", 'position': Position.get_by_id('5d998f78e179752adb6b880f')}
     #position_dic = {'farm': Farm.get_by_id('5d95c39e0d93ac9e7b820ce2'), 'position_num': 2, 'position_abs': "gps주소", 'position_name': "2번 위치 desc"}
 
-    str1 = "20191009 3:02:02"
+    str1 = "20191014 3:02:02"
     date_obj1 = datetime.strptime(str1, "%Y%m%d %H:%M:%S")
     crop_part_dic={'crop': Crop.get_by_id('5d999068dbc2308bb0794aab'),'crop_part_name':"stem1",'length':7.1,'speed':0.6,'date': date_obj1}
-    #CropPart.create(crop_part_dic)
+    CropPart.create(crop_part_dic)
 
 
     #farm_dic = {'name': 'farm1', 'manager': User.get_by_id('5d943df97689541378a2540f'),'phone_num': '01046244619'}

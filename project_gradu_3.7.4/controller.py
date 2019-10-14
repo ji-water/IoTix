@@ -193,6 +193,9 @@ class CropDetailAPI(Resource):
         crop_data = Crop.get_crop_by_position(farm_data.pk, position_num)
         date_select = 1
 
+        speed_list = CropPart.get_crop_part_speed_list(farm_data.pk, crop_name, part_name)
+        print(speed_list)
+
         #return result_list
         return make_response(render_template('charts.html', position_num=position_num, data=crop_data, chart_list=result_list, date_select=date_select))
 
@@ -205,7 +208,6 @@ api.add_resource(FarmAPI, '/farm')
 api.add_resource(CropAPI, '/farm/<int:position_num>/<string:crop_name>')
 #api.add_resource(CropDetailAPI,'/farm/crop_detail')
 api.add_resource(CropDetailAPI, '/farm/<int:position_num>')
-api.add_resource(CropAPI, '/farm/<int:position_num>/<string:crop_name>')
 
 
 if __name__ == '__main__':
