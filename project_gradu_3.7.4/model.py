@@ -168,7 +168,7 @@ class CropPart():
     def get_crop_part_day_detail(farm_id,crop_name, part_name, date_obj):
         #date_obj = datetime.strptime(date, "%Y%m%d")
         date_obj2 = date_obj+timedelta(days=1)
-
+        print(date_obj, date_obj2)
         crop_qs = CropSchema.objects(crop_name=crop_name,farm=farm_id).first()
         part_qs = CropPartSchema.objects.filter(crop=crop_qs.pk,crop_part_name=part_name)
         date_qs = part_qs.filter(__raw__={"date": {"$gte": date_obj, "$lt": date_obj2}})
@@ -238,10 +238,10 @@ if __name__ == '__main__':
     crop_dic = {'farm': Farm.get_by_id('5d77d915acf3296b9e3c1c73'), 'crop_name':"tomato2", 'crop_type':"tomato", 'position': Position.get_by_id('5d9065696b602e2e595d873e')}
     position_dic = {'farm': Farm.get_by_id('5d77d915acf3296b9e3c1c73'), 'position_num': 2, 'position_abs': "gps주소", 'position_name': "2번 위치 desc"}
 
-    str1 = "20191004 23:50:10"
+    str1 = "20191011 03:02:02"
     date_obj1 = datetime.strptime(str1, "%Y%m%d %H:%M:%S")
-    crop_part_dic={'crop': Crop.get_by_id('5d9079e8c54b56aab045d9fb'),'crop_part_name':"stem1",'length':6.00,'speed':0.84,'date': date_obj1}
-    #CropPart.create(crop_part_dic)
+    crop_part_dic={'crop': Crop.get_by_id('5d9079e8c54b56aab045d9fb'),'crop_part_name':"stem1",'length':6.10,'speed':0.84,'date': date_obj1}
+    CropPart.create(crop_part_dic)
 
 
     #farm_dic = {'name': 'farm1', 'manager': User.get_by_id('5d943df97689541378a2540f'),'phone_num': '01046244619'}
