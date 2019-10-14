@@ -14,9 +14,6 @@
   <!-- Custom fonts for this template-->
   <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
-  <!-- Page level plugin CSS-->
-  <link href="/static/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-
   <!-- Custom styles for this template-->
   <link href="/static/css/sb-admin.css" rel="stylesheet">
 
@@ -97,49 +94,25 @@
             </p>
             
             <!--farm image button-->
-            <form action="charts.html" method="get">
-            
-              <div class="row">
-                <p class="text-center">
-                <div class="col-xs-4">
-                  <button class="btn" name="farm" type="submit" value="1"><img class="btn-img" src="static/image/farm1.png"></button>
-                </div>
-                <div class="col-xs-4">
-                  <button class="btn" name="farm" type="submit" value="2"><img class="btn-img" src="static/image/farm2.png"></button>
-                </div>
-                <div class="col-xs-4">
-                  <button class="btn" name="farm" type="submit" value="3"><img class="btn-img" src="static/image/farm3.png"></button>
-                </div>
-                </p>
-              </div>
-              <div class="row">
-                <p class="text-center">
-                <div class="col-xs-4">
-                  <button class="btn" name="farm" type="submit" value="4"><img class="btn-img" src="static/image/farm4.png"></button>
-                </div>
-                <div class="col-xs-4">
-                  <button class="btn" name="farm" type="submit" value="5"><img class="btn-img" src="static/image/farm5.png"></button>
-                </div>
-                <div class="col-xs-4">
-                  <button class="btn" name="farm" type="submit" value="6"><img class="btn-img" src="static/image/farm6.png"></button>
-                </div>
-                </p>
-              </div>
-              <div class="row">
-                <p class="text-center">
-                <div class="col-xs-4">
-                  <button class="btn" name="farm" type="submit" value="7"><img class="btn-img" src="static/image/farm7.png"></button>
-                </div>
-                <div class="col-xs-4">
-                  <button class="btn" name="farm" type="submit" value="8"><img class="btn-img" src="static/image/farm8.png"></button>
-                </div>
-                <div class="col-xs-4">
-                  <button class="btn" name="farm" type="submit" value="9"><img class="btn-img" src="static/image/farm9.png"></button>
-                </div>
-                </p>
-              </div>
-            </form>
+          <div class="card-body">
+            <form action="/farm" method="post">
+                <div class="row">
+                {% for i in range(1,10) %}
+                  <div class="col-xs-4">
+                  {% if p_list[i-1] == 1 %}
+                    <button class="btn" name="position_num" type="submit" value={{i}}><img class="btn-img" src="static/image/farm{{i}}.png"></button>
+                  {% else %}
+                    <button class="btn" name="position_num" type="button"><img class="btn-img" src="static/image/farm{{i}}_x.png"></button>
+                  {% endif %}
+                  </div>
+                  {% if (i%3) ==0 %}
+                    </div>
+                    <div class="row">
+                  {% endif %}
 
+                {%endfor%}
+            </form>
+          </div>
           <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
         </div>
 
@@ -186,21 +159,15 @@
   </div>
 
   <!-- Bootstrap core JavaScript-->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
   <!-- Core plugin JavaScript-->
-  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-  <!-- Page level plugin JavaScript-->
-  <script src="vendor/datatables/jquery.dataTables.js"></script>
-  <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
 
   <!-- Custom scripts for all pages-->
-  <script src="js/sb-admin.min.js"></script>
+  <script src="/static/js/sb-admin.min.js"></script>
 
-  <!-- Demo scripts for this page-->
-  <script src="js/demo/datatables-demo.js"></script>
 
 </body>
 

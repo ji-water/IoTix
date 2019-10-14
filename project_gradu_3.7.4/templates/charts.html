@@ -12,13 +12,11 @@
   <title>IOTIX 농장 관리 페이지- 작물 정보</title>
 
   <!-- Custom fonts for this template-->
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
-  <!-- Page level plugin CSS-->
-  <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
 
   <!-- Custom styles for this template-->
-  <link href="css/sb-admin.css" rel="stylesheet">
+  <link href="/static/css/sb-admin.css" rel="stylesheet">
 
 </head>
 
@@ -26,7 +24,7 @@
 
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-    <a class="navbar-brand mr-1" href="index.html">IOTIX</a>
+    <a class="navbar-brand mr-1" href="{{ url_for('homeapi') }}">IOTIX</a>
 
     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
       <i class="fas fa-bars"></i>
@@ -55,13 +53,13 @@
     <!-- Sidebar -->
     <ul class="sidebar navbar-nav">
         <li class="nav-item active">
-          <a class="nav-link" href="index.html">
+          <a class="nav-link" href="{{ url_for('homeapi') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>프로젝트 소개</span>
           </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="farm.html">
+            <a class="nav-link" href="{{ url_for('farmapi') }}">
               <i class="fas fa-fw fa-table"></i>
               <span>작물 관리</span></a>
         </li>
@@ -86,7 +84,7 @@
             작물 데이터 관리</div>
           <div class="card-body">
               <p class="small text-center text-muted my-5">
-                  <em>위치 (여기 위치번호 출력하고싶어요)번 작물을 선택해주세요.</em>
+                  <em>위치 {{position_num}}번 작물을 선택해주세요.</em>
               </p>
               
               <!-- content -->
@@ -106,36 +104,88 @@
               </div>  
 
 
-              <form name="crop_select" method="post">
+              <form action="/farm/{{position_num}}" method="post">
                 <div class="row">
 
-                    <select name="crop_type" id="crop_type">
-                      <option value="1" selected>토마토1</option>
-                      <option value="2">토마토2</option>
-                      </select> 
-    
-                      <select name="position" id="position">
-                        <option value="a" selected>윗 줄기</option>
-                        <option value="b">아래 줄기</option>
-                      </select>     
+                      <select name="crop_name" id="crop_name">
+                        <option value="">--작물--</option>
+                      {% for i in data %}
+                        <option value={{i['crop_name']}}>{{i['crop_name']}}</option>
+                      {% endfor %}
+                      </select>
+                      <select name="crop_part_name" id="crop_part_name">
+                        <option value="">--부위--</option>
+                      </select>
+                </div>
+                <div class="row">
 
-                      <button class="btn" name="farm" type="submit">제출</button>
+                    {% if date_select == 1 %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle">
+                          <i class="fas fa-fw fa-folder"></i>
+                          <span>날짜</span>
+                        </a>
+                    </li>
+                    <input id="date_input" type='date' required>
+                    {% endif %}
+                    <input type=hidden id="date" name="date" value="00000000">
+                    <button class="btn" type="submit">제출</button>
+                      <!-- script-->
+                    <script>
+                    let crop_name_select = document.getElementById('crop_name');
+                        let crop_part_select = document.getElementById('crop_part_name');
+
+                        crop_name_select.onchange=function(){
+                            crop_name = crop_name_select.value;
+
+                            fetch('/farm/'+{{position_num}}+'/'+crop_name).then(function(response){
+                                response.json().then(function(data){
+                                    let optionHTML='';
+
+                                    console.log(data);
+
+                                    for(let part of data){
+                                       optionHTML += '<option value="'+part+'">'+part+'</option>';
+                                    }
+
+                                    crop_part_select.innerHTML = optionHTML;
+                                });
+                            });
+                        }
+
+    var today = new Date().toISOString().substring(0, 10);
+    var today_arr = today.split('-');
+    document.getElementById('date').value = today_arr[0]+''+today_arr[1]+''+today_arr[2];
+
+
+    if( {{date_select}} == 1 ){
+     function fncDateToStr(argDate){
+        var tmp = '';
+        if(argDate !== undefined){
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+            tmp = String(argDate).replace(/(^\s*)|(\s*$)/gi, '').replace(regExp, ''); // 공백 및 특수문자 제거
+        }
+        return tmp;
+    }
+    let date_org = document.getElementById('date_input');
+    console.log(date_org.value);
+    let date_rtn = document.getElementById('date');
+    console.log(date_rtn.value);
+    date_rtn.value = fncDateToStr(date_org.value);
+
+    date_org.onchange=function(){
+           date_rtn.value = fncDateToStr(date_org.value);
+           console.log(date_rtn.value);
+    }
+    }
+
+  </script>
 
                 </div>
+
               </form>
-
-              <form name="date_select" method="post">
-                <div class="row">
-                  <input type='date' value="2019-09-30"/>
-                  <button class="btn" name="date" type="submit" onclick="get_data(d)">제출</button>
-
-                </div>
-            
-
               <!-- chart -->
               <canvas id="myAreaChart" width="100%" height="30"></canvas>
-            
-              </form>
       
           </div>
       
@@ -178,35 +228,63 @@
           <div class="modal-body">로그아웃 하시겠습니까?</div>
           <div class="modal-footer">
             <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
-            <a class="btn btn-primary" href="login.html">로그아웃</a>
+            <a class="btn btn-primary" href="{{ url_for('logoutapi') }}">로그아웃</a>
           </div>
         </div>
       </div>
     </div>
 
   <!-- Bootstrap core JavaScript-->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
   <!-- Core plugin JavaScript-->
-  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
 
   <!-- Page level plugin JavaScript-->
-  <script src="vendor/chart.js/Chart.min.js"></script>
+  <script src="/static/vendor/chart.js/Chart.min.js"></script>
 
   <!-- Custom scripts for all pages-->
-  <script src="js/sb-admin.min.js"></script>
+  <script src="/static/js/sb-admin.min.js"></script>
 
   <!-- Demo scripts for this page-->
-  <script type="text/javascript" src="js/demo/chart-area-demo.js"></script>
+  <script type="text/javascript" src="/static/js/demo/chart-area-demo.js"></script>
   <script>
-    var d = [1,2,3,4,5,4,4];
-    console.log(d);
-    get_data(d);
-    myLineChart.data.datasets[0].data=d;
+    var dd=[1,1,1,1,1,1,1];
+    var day=["Mar 1", "Mar 2", "Mar 3", "Mar 4", "Mar 5", "Mar 6", "Mar 7"];
+
+    var max=0;
+
+    dd[0]={{chart_list[0]['delta']}};
+    dd[1]={{chart_list[1]['delta']}};
+    dd[2]={{chart_list[2]['delta']}};
+    dd[3]={{chart_list[3]['delta']}};
+    dd[4]={{chart_list[4]['delta']}};
+    dd[5]={{chart_list[5]['delta']}};
+    dd[6]={{chart_list[6]['delta']}};
+    day[0]=("{{chart_list[0]['date']}}".split(" "))[0];
+    day[1]=("{{chart_list[1]['date']}}".split(" "))[0];
+    day[2]=("{{chart_list[2]['date']}}".split(" "))[0];
+    day[3]=("{{chart_list[3]['date']}}".split(" "))[0];
+    day[4]=("{{chart_list[4]['date']}}".split(" "))[0];
+    day[5]=("{{chart_list[5]['date']}}".split(" "))[0];
+    day[6]=("{{chart_list[6]['date']}}".split(" "))[0];
+
+    for(var i=0; i<7; i++){
+        if(dd[i]>max){
+            max=dd[i]/1;
+         }
+    }
+
+    console.log(dd,day);
+    myLineChart.data.datasets[0].data=dd;
+    myLineChart.data.labels=day;
+    myLineChart.options.scales.yAxes[0].ticks.max=parseInt(max)+1;
     myLineChart.update();
+
   </script>
-    
+
+  <!--<script type="text/javascript" src="/static/js/jquery.js"></script>-->
  
 
 </body>
