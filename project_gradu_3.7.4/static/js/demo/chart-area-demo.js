@@ -12,7 +12,7 @@ var myLineChart = new Chart(ctx, {
   data: {
     labels: chart_date,
     datasets: [{
-      label: "Sessions",
+      label: "길이 변화량",
       lineTension: 0.3,
       backgroundColor: "rgba(2,117,216,0.2)",
       borderColor: "rgba(2,117,216,1)",
@@ -62,7 +62,7 @@ var myBarChart = new Chart(ctx2, {
   data: {
     labels: [1,2,1,2,1,2,1],
     datasets: [{
-      label: "BarChart",
+      label: "성장 속도",
       lineTension: 0.3,
       backgroundColor: "#F7464A",
       borderColor: "rgba(2,117,216,1)",
@@ -75,5 +75,10 @@ var myBarChart = new Chart(ctx2, {
       pointBorderWidth: 2,
       data: [0,0,0,0,0,0,0]
     }]
+  },
+  options:{
+  legend: {
+      display: false
+    }
   }
 });

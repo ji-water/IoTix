@@ -215,7 +215,7 @@ class CropDetailAPI(Resource):
         print(speed_list)
 
         #return result_list
-        return make_response(render_template('charts.html', position_num=position_num, data=crop_data, chart_list=result_list, date_select=date_select))
+        return make_response(render_template('charts.html', position_num=position_num, data=crop_data, chart_list=result_list, date_select=date_select, speed_list=speed_list))
 
 api.add_resource(HomeAPI, '/')
 api.add_resource(LoginAPI, '/login')
@@ -229,4 +229,4 @@ api.add_resource(CropDetailAPI, '/farm/<int:position_num>')
 
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=False)
+    app.run(debug=True, threaded=True)
