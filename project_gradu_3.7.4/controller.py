@@ -7,6 +7,9 @@ from flask_objectid_converter import ObjectIDConverter
 from form import LoginForm
 from flask_wtf.csrf import CSRFProtect
 
+from LSTM import IOTIX_predict
+from keras.models import load_model
+
 from model import *
 import json
 from bson import ObjectId
@@ -172,24 +175,39 @@ class CropDetailAPI(Resource):
         gap = (today_obj-date_obj).days #오늘날짜-입력된날짜
 
         result_list = list()
-        list_for_graph = list() #7일의 delta만 담음
 
         for i in range(gap+1) :
             temp_qs = CropPart.get_crop_part_day_detail(farm_data.pk, crop_name, part_name, date_obj + timedelta(days=i))
             yes_qs = CropPart.get_crop_part_day_detail(farm_data.pk, crop_name, part_name, date_obj + timedelta(days=i - 1))
             temp_qs['delta']= temp_qs['length']-yes_qs['length'] #변화량 추가
 
-            list_for_graph.append(temp_qs['delta'])
             result_list.append(temp_qs)
+
+        list_for_predict = list()
+        ### 3days data for predict
+        for i in range(3):
+            #오늘-어제 변화량 부터 최신 3일까지
+            pr_temp_qs = CropPart.get_crop_part_day_detail(farm_data.pk, crop_name, part_name,
+                                                        today_obj - timedelta(days=i))
+
+            pr_yes_qs = CropPart.get_crop_part_day_detail(farm_data.pk, crop_name, part_name,
+                                                       today_obj - timedelta(days=i + 1))
+
+            list_for_predict.append(pr_temp_qs['length'] - pr_yes_qs['length'])  # 변화량 추가
+        list_for_predict.reverse()
+
+        ### prediction
+        if gap<6 :
+            predict_res = IOTIX_predict.predictLength(list_for_predict)
 
         for i in range(7-(gap+1)):
             tp_dict = dict()
             tp_dict['date'] = str(today_obj+timedelta(days=i+1))
+            tp_dict['delta'] = predict_res[i]
 
-            list_for_graph.append(float(0))
             result_list.append(tp_dict)
 
-        print(list_for_graph)
+
         crop_data = Crop.get_crop_by_position(farm_data.pk, position_num)
         date_select = 1
 
@@ -211,4 +229,4 @@ api.add_resource(CropDetailAPI, '/farm/<int:position_num>')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=False)

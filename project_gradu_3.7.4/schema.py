@@ -35,3 +35,4 @@ class CropPartSchema(Document):
     length = FloatField() #current len
     speed = FloatField()
     date = DateTimeField() #측정시간
+    tag = IntField()
