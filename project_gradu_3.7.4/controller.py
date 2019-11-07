@@ -150,7 +150,6 @@ class CropDetailAPI(Resource):
 
         chart_data = [{'delta':0},{'delta':0},{'delta':0},{'delta':0},{'delta':0},{'delta':0},{'delta':0}]
         date_select=0
-
         #return crop_data
         return make_response(render_template('charts.html',position_num=position_num,data=crop_data,chart_list=chart_data,date_select=date_select))
 
@@ -173,12 +172,14 @@ class CropDetailAPI(Resource):
         gap = (today_obj-date_obj).days #오늘날짜-입력된날짜
 
         result_list = list()
+        result_len_list = list()
 
         for i in range(gap+1) :
             temp_qs = CropPart.get_crop_part_day_detail(farm_data.pk, crop_name, part_name, date_obj + timedelta(days=i))
             yes_qs = CropPart.get_crop_part_day_detail(farm_data.pk, crop_name, part_name, date_obj + timedelta(days=i - 1))
             temp_qs['delta']= temp_qs['length']-yes_qs['length'] #변화량 추가
 
+            result_len_list.append(temp_qs['length'])
             result_list.append(temp_qs)
 
         list_for_predict = list()
@@ -204,6 +205,9 @@ class CropDetailAPI(Resource):
             tp_dict['delta'] = predict_res[i]
 
             result_list.append(tp_dict)
+
+            #누적len
+            result_len_list.append(result_len_list[gap+i]+predict_res[i])
 
 
         crop_data = Crop.get_crop_by_position(farm_data.pk, position_num)
