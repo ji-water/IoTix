@@ -89,13 +89,12 @@ class LogoutAPI(Resource):
 class HomeAPI(Resource):
     def get(self):
         if not session.get('logged_in'):
-            return redirect('/login')
-        else:
-            return make_response(render_template('index.html'))
+            session['logged_in']=False
+
+        return make_response(render_template('index.html',session=session['logged_in']))
 
 class FarmAPI(Resource):
 
-    @login_required
     def get(self):
         if not session.get('logged_in'):
             return redirect('/login')
@@ -119,7 +118,6 @@ class FarmAPI(Resource):
             #return make_response(json.dumps(data,ensure_ascii=False),200)
             return make_response(render_template('farm.html',id=data['id'],name=data['name'],manager=data['manager'],position_data=data['position_data'],p_list=data['position_list']))
 
-    @login_required
     def post(self):
         position_num = request.form['position_num']
         return redirect(url_for('cropdetailapi',position_num=position_num))
