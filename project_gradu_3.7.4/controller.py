@@ -229,4 +229,4 @@ api.add_resource(CropDetailAPI, '/farm/<int:position_num>')
 
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=False)
+    app.run(debug=True)
