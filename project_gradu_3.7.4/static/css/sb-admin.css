@@ -4820,7 +4820,7 @@ input[type="button"].btn-block {
 }
 
 .navbar-dark .navbar-brand {
-  color: #fff;
+  color: #262a33;
 }
 
 .navbar-dark .navbar-brand:hover, .navbar-dark .navbar-brand:focus {
@@ -6990,7 +6990,7 @@ button.bg-light:focus {
 }
 
 .bg-dark {
-  background-color: #343a40 !important;
+  background-color: #45c8dc !important;
 }
 
 a.bg-dark:hover, a.bg-dark:focus,
@@ -10675,7 +10675,7 @@ body {
 
 .sidebar {
   width: 90px !important;
-  background-color: #212529;
+  background-color: #262a33;
   min-height: calc(100vh - 56px);
 }
 
