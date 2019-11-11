@@ -213,7 +213,11 @@ class CropDetailAPI(Resource):
         crop_data = Crop.get_crop_by_position(farm_data.pk, position_num)
         date_select = 1
 
-        speed_list = CropPart.get_crop_part_speed_list(farm_data.pk, crop_name, part_name)
+        #막대그래프
+        part_list = CropPart.get_crop_part_speed_list(farm_data.pk, crop_name, part_name)
+        # print(part_list)
+        # for data in part_list :
+        #     print(data['length'],data['speed'])
 
         #return result_list
         return make_response(render_template('charts.html', position_num=position_num, data=crop_data, chart_list=result_list, len_chart_list=result_len_list, date_select=date_select, speed_list=speed_list))
