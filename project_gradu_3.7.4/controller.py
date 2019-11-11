@@ -150,6 +150,7 @@ class CropDetailAPI(Resource):
 
         chart_data = [{'delta':0},{'delta':0},{'delta':0},{'delta':0},{'delta':0},{'delta':0},{'delta':0}]
         date_select=0
+
         #return crop_data
         return make_response(render_template('charts.html',position_num=position_num,data=crop_data,chart_list=chart_data,date_select=date_select))
 
@@ -206,18 +207,16 @@ class CropDetailAPI(Resource):
 
             result_list.append(tp_dict)
 
-            #누적len
-            result_len_list.append(result_len_list[gap+i]+predict_res[i])
-
+            # 누적len
+            result_len_list.append(result_len_list[gap + i] + predict_res[i])
 
         crop_data = Crop.get_crop_by_position(farm_data.pk, position_num)
         date_select = 1
 
         speed_list = CropPart.get_crop_part_speed_list(farm_data.pk, crop_name, part_name)
-        print(speed_list)
 
         #return result_list
-        return make_response(render_template('charts.html', position_num=position_num, data=crop_data, chart_list=result_list, date_select=date_select, speed_list=speed_list))
+        return make_response(render_template('charts.html', position_num=position_num, data=crop_data, chart_list=result_list, len_chart_list=result_len_list, date_select=date_select, speed_list=speed_list))
 
 api.add_resource(HomeAPI, '/')
 api.add_resource(LoginAPI, '/login')

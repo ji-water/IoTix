@@ -2,9 +2,9 @@
 Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#292b2c';
 
-var chart_date=["Mar 1", "Mar 2", "Mar 3", "Mar 4", "Mar 5", "Mar 6", "Mar 7"];
-var chart_data=[1,1,1,1,1,1,1];
-var chart_data2=[1,2,3,4,5,6,7];
+var chart_date=["1", "2", "3", "4", "5", "6", "7"];
+var chart_data=[0,0,0,0,0,0,0];
+var chart_data2=[0,0,0,0,0,0,0];
 
 // Area Chart Example
 var ctx = document.getElementById("myAreaChart");
@@ -13,29 +13,29 @@ var myLineChart = new Chart(ctx, {
   data: {
     labels: chart_date,
     datasets: [{
-      label: "길이 변화량1",
+      label: "길이 변화량",
       lineTension: 0.3,
-      backgroundColor: "rgba(2,117,216,0.2)",
-      borderColor: "rgba(2,117,216,1)",
+      backgroundColor: "rgba(34,142,208,0.4)",
+      borderColor: "rgba(34,142,208,1)",
       pointRadius: 5,
-      pointBackgroundColor: "rgba(2,117,216,1)",
+      pointBackgroundColor: "rgba(34,142,208,1)",
       pointBorderColor: "rgba(255,255,255,0.8)",
       pointHoverRadius: 5,
-      pointHoverBackgroundColor: "rgba(2,117,216,1)",
+      pointHoverBackgroundColor: "rgba(34,142,208,1)",
       pointHitRadius: 50,
       pointBorderWidth: 2,
       data: chart_data
     },
     {
-      label: "길이 변화량2",
+      label: "식물 길이",
       lineTension: 0.3,
-      backgroundColor: "rgba(2,117,216,0.2)",
-      borderColor: "rgba(2,117,216,1)",
+      backgroundColor: "rgba(250,112,75,0.4)",
+      borderColor: "rgba(250,112,75,1)",
       pointRadius: 5,
-      pointBackgroundColor: "rgba(2,117,216,1)",
+      pointBackgroundColor: "rgba(250,112,75,1)",
       pointBorderColor: "rgba(255,255,255,0.8)",
       pointHoverRadius: 5,
-      pointHoverBackgroundColor: "rgba(2,117,216,1)",
+      pointHoverBackgroundColor: "rgba(250,112,75,1)",
       pointHitRadius: 50,
       pointBorderWidth: 2,
       data: chart_data2
@@ -59,9 +59,6 @@ var myLineChart = new Chart(ctx, {
       yAxes: [{
         stacked:true,
         ticks: {
-          min: 0,
-          max: 8,
-          maxTicksLimit: 4
         },
         gridLines: {
           color: "rgba(0, 0, 0, .125)",
@@ -70,6 +67,8 @@ var myLineChart = new Chart(ctx, {
     },
     legend: {
       //display: false
+      labels:{
+        usePointStyle: true}
     }
     }
 }
@@ -91,7 +90,7 @@ var myBarChart = new Chart(ctx2, {
     datasets: [{
       label: "성장 속도",
       lineTension: 0.3,
-      backgroundColor: "#F7464A",
+      backgroundColor: "rgba(253,183,43,1)",
       borderColor: "rgba(2,117,216,1)",
       pointRadius: 5,
       pointBackgroundColor: "rgba(2,117,216,1)",
