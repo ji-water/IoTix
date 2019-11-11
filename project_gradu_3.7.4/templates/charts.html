@@ -224,7 +224,7 @@
               <canvas id="myBarChart" width="100%" height="30"></canvas>
                 </div>
                 <div class="card-footer" style="text-align:right;">
-                  각 값은 1mm,2mm 구간별 성장 속도를 나타냅니다.
+                  각 값은 해당 길이의 구간별 성장 속도를 나타냅니다.
              </div>
             </div>
           </div>
@@ -308,7 +308,7 @@
     dd[4]={{chart_list[4]['delta']}};
     dd[5]={{chart_list[5]['delta']}};
     dd[6]={{chart_list[6]['delta']}};
-
+    
     day[0]=("{{chart_list[0]['date']}}".split(" "))[0];
     day[1]=("{{chart_list[1]['date']}}".split(" "))[0];
     day[2]=("{{chart_list[2]['date']}}".split(" "))[0];
@@ -318,21 +318,27 @@
     day[6]=("{{chart_list[6]['date']}}".split(" "))[0];
 
     myLineChart.data.datasets[0].data=dd;
-    myLineChart.data.datasets[1].data={{len_chart_list}};
+    myLineChart.data.datasets[1].data={{chart_totalL}};
     myLineChart.data.labels=day;
     myLineChart.update();
 
    //bar chart
-   console.log({{speed_list}});
+   var start_len={{bar_len}}[0];
    var index=[];
-   for(var i=0; i<{{speed_list}}.length; i++){
-        if(i%2==0)
-            index.push(1);
-        else
-            index.push(2);
+   var speed=[];
+
+   index.push(start_len);
+   speed.push({{bar_speed}}[0]);
+   for(var i=1; i<{{bar_speed}}.length; i++){
+        for(var j=1; j<({{bar_len}}[i]-{{bar_len}}[i-1]); j++){
+            index.push({{bar_len}}[i-1]+j);
+            speed.push({{bar_speed}}[i]);
+        }
+        index.push({{bar_len}}[i]);
+        speed.push({{bar_speed}}[i]);
    }
    myBarChart.data.labels=index;
-   myBarChart.data.datasets[0].data={{speed_list}};
+   myBarChart.data.datasets[0].data=speed;
    myBarChart.update();
 
 

@@ -181,7 +181,7 @@ class CropDetailAPI(Resource):
             temp_qs['delta']= temp_qs['length']-yes_qs['length'] #변화량 추가
 
             result_len_list.append(temp_qs['length'])
-            result_list.append(temp_qs)
+            result_list.append(temp_qs.to_dict())
 
         list_for_predict = list()
         ### 3days data for predict
@@ -206,7 +206,6 @@ class CropDetailAPI(Resource):
             tp_dict['delta'] = predict_res[i]
 
             result_list.append(tp_dict)
-
             # 누적len
             result_len_list.append(result_len_list[gap + i] + predict_res[i])
 
@@ -215,12 +214,15 @@ class CropDetailAPI(Resource):
 
         #막대그래프
         part_list = CropPart.get_crop_part_speed_list(farm_data.pk, crop_name, part_name)
-        # print(part_list)
-        # for data in part_list :
-        #     print(data['length'],data['speed'])
+        bar_len_list=list()
+        bar_speed_list=list()
+        for data in part_list :
+             bar_len_list.append(data['length'])
+             bar_speed_list.append(data['speed'])
 
+        print(result_list)
         #return result_list
-        return make_response(render_template('charts.html', position_num=position_num, data=crop_data, chart_list=result_list, len_chart_list=result_len_list, date_select=date_select, speed_list=speed_list))
+        return make_response(render_template('charts.html', position_num=position_num, data=crop_data, chart_totalL=result_len_list, date_select=date_select, chart_list=result_list, bar_len=bar_len_list,bar_speed=bar_speed_list))
 
 api.add_resource(HomeAPI, '/')
 api.add_resource(LoginAPI, '/login')

@@ -103,8 +103,16 @@ var myBarChart = new Chart(ctx2, {
     }]
   },
   options:{
-  legend: {
-      display: false
+    legend: {
+          display: false
+        },
+    scales:{
+        yAxes:[{
+            ticks: {
+            beginAtZero:true,
+            min:0
+            }
+        }]
     }
   }
 });

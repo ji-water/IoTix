@@ -265,9 +265,9 @@ if __name__ == '__main__':
     #crop_dic = {'farm': Farm.get_by_id('5d95c39e0d93ac9e7b820ce2'), 'crop_name':"tomato2", 'crop_type':"tomato", 'position': Position.get_by_id('5d998f78e179752adb6b880f')}
     position_dic = {'farm': Farm.get_by_id('5d77d915acf3296b9e3c1c73'), 'position_num': 3, 'position_abs': "gps주소", 'position_name': "3번 위치 desc"}
 
-    str1 = "20191111 12:12:12"
+    str1 = "20191111 12:21:12"
     date_obj1 = datetime.strptime(str1, "%Y%m%d %H:%M:%S")
-    crop_part_dic={'crop': Crop.get_by_id('5d999068dbc2308bb0794aab'),'crop_part_name':"stem1",'length':87,'speed':1.0,'date': date_obj1,'tag':0}
+    crop_part_dic={'crop': Crop.get_by_id('5d999068dbc2308bb0794aab'),'crop_part_name':"stem1",'length':91,'speed':0.005556,'date': date_obj1,'tag':0}
     CropPart.create(crop_part_dic)
 
 
