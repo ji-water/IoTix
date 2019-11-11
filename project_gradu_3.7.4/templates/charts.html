@@ -76,9 +76,18 @@
             <i class="fas fa-chart-area"></i>
             작물 데이터 관리</div>
           <div class="card-body">
-              <p class=" text-center my-3">
-                  위치 {{position_num}}번 작물을 선택해주세요.
+              {% if date_select == 1 %}
+              <p class=" text-center my-3" style="font-size: 120%;">
+                  위치 {{position_num}}번 작물과 그래프 시작 날짜를 선택해주세요.
               </p>
+              <p class="text-center text-muted my-3">
+                  ** 기본 시작 날짜는 <font style="color:#22a1b4;">오늘</font> 날짜 입니다. </p>
+              {% else %}
+                  <p class=" text-center my-3 " style="font-size: 120%;">
+                  위치 {{position_num}}번 작물을 선택해주세요.
+                    </p>
+              {% endif %}
+
 
               
               <!-- content -->
@@ -292,8 +301,6 @@
     var dd=[1,1,1,1,1,1,1];
     var day=["1", "2", "3", "4", "5", "6", "7"];
 
-    var max=0;
-
     dd[0]={{chart_list[0]['delta']}};
     dd[1]={{chart_list[1]['delta']}};
     dd[2]={{chart_list[2]['delta']}};
@@ -301,6 +308,7 @@
     dd[4]={{chart_list[4]['delta']}};
     dd[5]={{chart_list[5]['delta']}};
     dd[6]={{chart_list[6]['delta']}};
+
     day[0]=("{{chart_list[0]['date']}}".split(" "))[0];
     day[1]=("{{chart_list[1]['date']}}".split(" "))[0];
     day[2]=("{{chart_list[2]['date']}}".split(" "))[0];
@@ -309,17 +317,9 @@
     day[5]=("{{chart_list[5]['date']}}".split(" "))[0];
     day[6]=("{{chart_list[6]['date']}}".split(" "))[0];
 
-    for(var i=0; i<7; i++){
-        if(dd[i]>max){
-            max=dd[i]/1;
-         }
-    }
-
-    console.log(dd,day);
     myLineChart.data.datasets[0].data=dd;
     myLineChart.data.datasets[1].data={{len_chart_list}};
     myLineChart.data.labels=day;
-
     myLineChart.update();
 
    //bar chart
