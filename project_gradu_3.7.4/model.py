@@ -263,10 +263,10 @@ if __name__ == '__main__':
     #crop_dic = {'farm': Farm.get_by_id('5d95c39e0d93ac9e7b820ce2'), 'crop_name':"tomato2", 'crop_type':"tomato", 'position': Position.get_by_id('5d998f78e179752adb6b880f')}
     #position_dic = {'farm': Farm.get_by_id('5d95c39e0d93ac9e7b820ce2'), 'position_num': 2, 'position_abs': "gps주소", 'position_name': "2번 위치 desc"}
 
-    str1 = "20191031 3:02:02"
+    str1 = "20191111 12:12:12"
     date_obj1 = datetime.strptime(str1, "%Y%m%d %H:%M:%S")
-    crop_part_dic={'crop': Crop.get_by_id('5d9079e8c54b56aab045d9fb'),'crop_part_name':"stem1",'length':10.5,'speed':1.9,'date': date_obj1,'tag':0}
-    #CropPart.create(crop_part_dic)
+    crop_part_dic={'crop': Crop.get_by_id('5d999068dbc2308bb0794aab'),'crop_part_name':"stem1",'length':87,'speed':1.0,'date': date_obj1,'tag':0}
+    CropPart.create(crop_part_dic)
 
 
     #farm_dic = {'name': 'farm1', 'manager': User.get_by_id('5d943df97689541378a2540f'),'phone_num': '01046244619'}
