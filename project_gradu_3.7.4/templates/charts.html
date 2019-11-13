@@ -162,9 +162,9 @@
     /* ======== datetime을 yyyymmdd 포맷으로 변경 function ========= */
 
     var today = new Date().toISOString().substring(0, 10);
+    console.log(today);
     var today_arr = today.split('-');
     document.getElementById('date').value = today_arr[0]+''+today_arr[1]+''+today_arr[2];
-
 
     if( {{date_select}} == 1 ){
      function fncDateToStr(argDate){
@@ -201,7 +201,7 @@
         <div class="card md-3">
             <div class="card-header" style="background-color:rgb(45,56,71);">
                 <font style="color:rgb(255,255,255);">
-                7일간 길이 변화량 그래프
+                7일간 길이 그래프
                </font>
             </div>
             <div class="card-body">
@@ -209,7 +209,7 @@
               <canvas id="myAreaChart" width="100%" height="30"></canvas>
             </div>
              <div class="card-footer" style="text-align:right;">
-                     오늘 이후의 그래프 값은 인공지능이 예측한 변화 값 입니다. </font>
+                     오늘 이후의 그래프 값은 인공지능이 예측한 값입니다. </font>
              </div>
         </div>
           </div>
@@ -224,7 +224,7 @@
               <canvas id="myBarChart" width="100%" height="30"></canvas>
                 </div>
                 <div class="card-footer" style="text-align:right;">
-                  각 값은 해당 길이의 구간별 성장 속도를 나타냅니다.
+                  각 값은 해당 길이의 성장 속도를 나타냅니다.
              </div>
             </div>
           </div>
@@ -300,6 +300,9 @@
   //line chart
     var dd=[1,1,1,1,1,1,1];
     var day=["1", "2", "3", "4", "5", "6", "7"];
+    var dataColor=[];
+    var dataColor2=[];
+    var dataBorColor=[];
 
     dd[0]={{chart_list[0]['delta']}};
     dd[1]={{chart_list[1]['delta']}};
@@ -308,7 +311,7 @@
     dd[4]={{chart_list[4]['delta']}};
     dd[5]={{chart_list[5]['delta']}};
     dd[6]={{chart_list[6]['delta']}};
-    
+
     day[0]=("{{chart_list[0]['date']}}".split(" "))[0];
     day[1]=("{{chart_list[1]['date']}}".split(" "))[0];
     day[2]=("{{chart_list[2]['date']}}".split(" "))[0];
@@ -317,6 +320,26 @@
     day[5]=("{{chart_list[5]['date']}}".split(" "))[0];
     day[6]=("{{chart_list[6]['date']}}".split(" "))[0];
 
+    today = new Date().toISOString().substring(0, 10);
+    console.log(today);
+    console.log(day[0]);
+    for(var i=0; i<7; i++){
+        if(today < day[i]){
+            dataColor.push("rgba(56,116,153,1)");
+            dataColor2.push("rgba(255,88,65,1)");
+            dataBorColor.push("rgba(0,0,0,0.1)");
+         }
+        else{
+            dataColor.push("rgba(34,142,208,1)");
+            dataColor2.push("rgba(250,112,75,1)");
+            dataBorColor.push("rgba(255,255,255,0.8)");
+         }
+    }
+
+    myLineChart.data.datasets[0].pointBackgroundColor=dataColor;
+    myLineChart.data.datasets[1].pointBackgroundColor=dataColor2;
+    myLineChart.data.datasets[0].pointBorderColor=dataBorColor;
+    myLineChart.data.datasets[1].pointBorderColor=dataBorColor;
     myLineChart.data.datasets[0].data=dd;
     myLineChart.data.datasets[1].data={{chart_totalL}};
     myLineChart.data.labels=day;
@@ -340,6 +363,7 @@
    myBarChart.data.labels=index;
    myBarChart.data.datasets[0].data=speed;
    myBarChart.update();
+
 
 
   </script>

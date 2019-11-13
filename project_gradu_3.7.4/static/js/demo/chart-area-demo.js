@@ -6,6 +6,11 @@ var chart_date=["1", "2", "3", "4", "5", "6", "7"];
 var chart_data=[0,0,0,0,0,0,0];
 var chart_data2=[0,0,0,0,0,0,0];
 
+
+var today = new Date().toISOString().substring(0, 10);
+var today_arr = today.split('-');
+var today= today_arr[0]+''+today_arr[1]+''+today_arr[2];
+
 // Area Chart Example
 var ctx = document.getElementById("myAreaChart");
 var myLineChart = new Chart(ctx, {
@@ -52,9 +57,13 @@ var myLineChart = new Chart(ctx, {
           display: false
         },
         ticks: {
-          maxTicksLimit: 7
+          maxTicksLimit: 7,
         },
         stacked: true,
+        scaleLabel:{
+                display:true,
+                labelString: '날짜'
+            }
       }],
       yAxes: [{
         stacked:true,
@@ -62,7 +71,11 @@ var myLineChart = new Chart(ctx, {
         },
         gridLines: {
           color: "rgba(0, 0, 0, .125)",
-        }
+        },
+        scaleLabel:{
+                display:true,
+                labelString: '길이(mm)'
+            }
       }],
     },
     legend: {
@@ -107,10 +120,21 @@ var myBarChart = new Chart(ctx2, {
           display: false
         },
     scales:{
+        xAxes:[{
+            scaleLabel:{
+                display:true,
+                labelString: '식물길이(mm)'
+            }
+        }
+        ],
         yAxes:[{
             ticks: {
             beginAtZero:true,
             min:0
+            },
+            scaleLabel:{
+                display:true,
+                labelString: '성장속도(mm/sec)'
             }
         }]
     }
