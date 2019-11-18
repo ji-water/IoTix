@@ -97,7 +97,16 @@
                 {% for i in range(1,10) %}
                   <div class="col-xs-4" style="margin-left:auto; margin-right:auto;">
                   {% if p_list[i-1] == 1 %}
+                   <div class="row">
                     <button class="btn" name="position_num" type="submit" value={{i}}><img class="btn-img" src="static/image/farm{{i}}.png"></button>
+                    </div>
+                    <div class="row text-muted" style="margin-left:80px; font-size: 0.9rem;">
+                    {% for j in position_data %}
+                      {% if j['position_num']==(i) %}
+                      {{j['position_name']}}
+                      {% endif %}
+                    {% endfor %}
+                    </div>
                   {% else %}
                     <button class="btn" name="position_num" type="button"><img class="btn-img" src="static/image/farm{{i}}_x.png"></button>
                   {% endif %}
